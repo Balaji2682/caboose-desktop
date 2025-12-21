@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Dark theme (default) */
+  --color-background: #1a1b26;
+  --color-foreground: #a9b1d6;
+  --color-primary: #7aa2f7;
+  --color-secondary: #bb9af7;
+  --color-accent: #7dcfff;
+  --color-muted: #565f89;
+  --color-border: #3b4261;
+  --color-success: #9ece6a;
+  --color-warning: #e0af68;
+  --color-error: #f7768e;
+}
+
+.theme-tokyo-night {
+  --color-background: #1a1b26;
+  --color-foreground: #a9b1d6;
+  --color-primary: #7aa2f7;
+  --color-secondary: #bb9af7;
+  --color-accent: #7dcfff;
+  --color-muted: #565f89;
+  --color-border: #3b4261;
+}
+
+.theme-dracula {
+  --color-background: #282a36;
+  --color-foreground: #f8f8f2;
+  --color-primary: #bd93f9;
+  --color-secondary: #ff79c6;
+  --color-accent: #8be9fd;
+  --color-muted: #6272a4;
+  --color-border: #44475a;
+}
+
+.theme-nord {
+  --color-background: #2e3440;
+  --color-foreground: #eceff4;
+  --color-primary: #88c0d0;
+  --color-secondary: #b48ead;
+  --color-accent: #8fbcbb;
+  --color-muted: #4c566a;
+  --color-border: #3b4252;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Log level colors */
+.log-debug { color: #9ece6a; }
+.log-info { color: #a9b1d6; }
+.log-warn { color: #e0af68; }
+.log-error { color: #f7768e; }
+.log-fatal { color: #ff5555; font-weight: bold; }

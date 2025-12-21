@@ -1,0 +1,49 @@
+# Caboose Desktop Configuration
+# Copy this file to .caboose.toml and customize for your project
+
+# Project settings
+project_name = "My Rails App"
+framework = "rails"  # auto-detected if not specified
+
+# Log settings
+[log]
+buffer_size = 10000      # Max log lines to keep in memory
+show_timestamps = true
+
+# Database monitoring settings
+[database]
+slow_query_threshold = 100.0  # Queries slower than 100ms are flagged
+enable_n1_detection = true
+
+# Debugger settings
+[debug]
+port = 12345
+auto_attach = false
+
+# Process definitions
+[processes.web]
+command = "bin/rails"
+args = ["server", "-p", "3000"]
+auto_restart = true
+use_pty = true
+color = "#7aa2f7"
+
+[processes.worker]
+command = "bundle"
+args = ["exec", "sidekiq"]
+auto_restart = true
+use_pty = true
+color = "#bb9af7"
+
+[processes.webpack]
+command = "bin/webpack-dev-server"
+auto_restart = true
+use_pty = true
+color = "#7dcfff"
+
+[processes.css]
+command = "yarn"
+args = ["build:css", "--watch"]
+auto_restart = false
+use_pty = false
+color = "#9ece6a"
