@@ -2,61 +2,343 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Dark theme (default) */
-  --color-background: #1a1b26;
-  --color-foreground: #a9b1d6;
-  --color-primary: #7aa2f7;
-  --color-secondary: #bb9af7;
-  --color-accent: #7dcfff;
-  --color-muted: #565f89;
-  --color-border: #3b4261;
-  --color-success: #9ece6a;
-  --color-warning: #e0af68;
-  --color-error: #f7768e;
+@layer base {
+  :root {
+    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'Fira Code', 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
+
+    /* Colors */
+    --color-background: #030712;
+    --color-foreground: #f9fafb;
+    --color-primary: #06b6d4;
+    --color-secondary: #3b82f6;
+    --color-accent: #8b5cf6;
+    --color-muted: #6b7280;
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+
+    /* Neon colors */
+    --color-neon-cyan: #00f0ff;
+    --color-neon-purple: #b026ff;
+    --color-neon-pink: #ff006e;
+    --color-neon-green: #00ff9f;
+    --color-neon-blue: #0066ff;
+  }
+
+  /* Tokyo Night Theme */
+  .theme-tokyo-night {
+    --color-background: #1a1b26;
+    --color-foreground: #a9b1d6;
+    --color-primary: #7aa2f7;
+    --color-secondary: #bb9af7;
+    --color-accent: #7dcfff;
+    --color-muted: #565f89;
+    --color-border: #3b4261;
+    --color-success: #9ece6a;
+    --color-warning: #e0af68;
+    --color-error: #f7768e;
+    --color-neon-cyan: #7dcfff;
+    --color-neon-purple: #bb9af7;
+    --color-neon-pink: #ff007c;
+    --color-neon-green: #9ece6a;
+    --color-neon-blue: #7aa2f7;
+  }
+
+  /* Dracula Theme */
+  .theme-dracula {
+    --color-background: #282a36;
+    --color-foreground: #f8f8f2;
+    --color-primary: #bd93f9;
+    --color-secondary: #ff79c6;
+    --color-accent: #8be9fd;
+    --color-muted: #6272a4;
+    --color-border: #44475a;
+    --color-success: #50fa7b;
+    --color-warning: #f1fa8c;
+    --color-error: #ff5555;
+    --color-neon-cyan: #8be9fd;
+    --color-neon-purple: #bd93f9;
+    --color-neon-pink: #ff79c6;
+    --color-neon-green: #50fa7b;
+    --color-neon-blue: #6272a4;
+  }
+
+  /* Nord Theme */
+  .theme-nord {
+    --color-background: #2e3440;
+    --color-foreground: #eceff4;
+    --color-primary: #88c0d0;
+    --color-secondary: #b48ead;
+    --color-accent: #8fbcbb;
+    --color-muted: #4c566a;
+    --color-border: #3b4252;
+    --color-success: #a3be8c;
+    --color-warning: #ebcb8b;
+    --color-error: #bf616a;
+    --color-neon-cyan: #88c0d0;
+    --color-neon-purple: #b48ead;
+    --color-neon-pink: #bf616a;
+    --color-neon-green: #a3be8c;
+    --color-neon-blue: #5e81ac;
+  }
+
+  /* Solarized Dark Theme */
+  .theme-solarized-dark {
+    --color-background: #002b36;
+    --color-foreground: #fdf6e3;
+    --color-primary: #268bd2;
+    --color-secondary: #2aa198;
+    --color-accent: #6c71c4;
+    --color-muted: #586e75;
+    --color-border: #073642;
+    --color-success: #859900;
+    --color-warning: #b58900;
+    --color-error: #dc322f;
+    --color-neon-cyan: #2aa198;
+    --color-neon-purple: #6c71c4;
+    --color-neon-pink: #d33682;
+    --color-neon-green: #859900;
+    --color-neon-blue: #268bd2;
+  }
+
+  /* Catppuccin Mocha Theme */
+  .theme-catppuccin {
+    --color-background: #1e1e2e;
+    --color-foreground: #cdd6f4;
+    --color-primary: #89b4fa;
+    --color-secondary: #cba6f7;
+    --color-accent: #89dceb;
+    --color-muted: #6c7086;
+    --color-border: #313244;
+    --color-success: #a6e3a1;
+    --color-warning: #f9e2af;
+    --color-error: #f38ba8;
+    --color-neon-cyan: #89dceb;
+    --color-neon-purple: #cba6f7;
+    --color-neon-pink: #f5c2e7;
+    --color-neon-green: #a6e3a1;
+    --color-neon-blue: #89b4fa;
+  }
+
+  * {
+    box-sizing: border-box;
+    border-color: var(--color-border);
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
 }
 
-.theme-tokyo-night {
-  --color-background: #1a1b26;
-  --color-foreground: #a9b1d6;
-  --color-primary: #7aa2f7;
-  --color-secondary: #bb9af7;
-  --color-accent: #7dcfff;
-  --color-muted: #565f89;
-  --color-border: #3b4261;
+@layer components {
+
+  /* Glassmorphism */
+  .glass {
+    background: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--color-border);
+  }
+
+  .glass-light {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--color-border);
+  }
+
+  /* Pattern backgrounds */
+  .dot-pattern {
+    background-image: radial-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .grid-pattern {
+    background-image:
+      linear-gradient(rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Neon glow effects */
+  .neon-cyan {
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.8),
+      0 0 20px rgba(0, 240, 255, 0.5),
+      0 0 30px rgba(0, 240, 255, 0.3);
+  }
+
+  .neon-purple {
+    text-shadow: 0 0 10px rgba(176, 38, 255, 0.8),
+      0 0 20px rgba(176, 38, 255, 0.5),
+      0 0 30px rgba(176, 38, 255, 0.3);
+  }
+
+  /* Status indicators */
+  .status-running {
+    @apply bg-green-500 animate-pulse;
+  }
+
+  .status-stopped {
+    @apply bg-gray-500;
+  }
+
+  .status-error {
+    @apply bg-red-500;
+  }
 }
 
-.theme-dracula {
-  --color-background: #282a36;
-  --color-foreground: #f8f8f2;
-  --color-primary: #bd93f9;
-  --color-secondary: #ff79c6;
-  --color-accent: #8be9fd;
-  --color-muted: #6272a4;
-  --color-border: #44475a;
+@layer utilities {
+
+  /* Smooth transitions */
+  .transition-smooth {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
 }
 
-.theme-nord {
-  --color-background: #2e3440;
-  --color-foreground: #eceff4;
-  --color-primary: #88c0d0;
-  --color-secondary: #b48ead;
-  --color-accent: #8fbcbb;
-  --color-muted: #4c566a;
-  --color-border: #3b4252;
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-* {
-  box-sizing: border-box;
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  margin: 0;
-  padding: 0;
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.6);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.5), 0 0 20px rgba(6, 182, 212, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.8), 0 0 30px rgba(6, 182, 212, 0.5);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.3s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
 /* Custom scrollbar */
@@ -66,21 +348,77 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-background);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-muted);
+  background: rgba(100, 116, 139, 0.5);
   border-radius: 4px;
+  transition: background 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary);
+  background: rgba(148, 163, 184, 0.7);
+}
+
+/* Code blocks */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
 }
 
 /* Log level colors */
-.log-debug { color: #9ece6a; }
-.log-info { color: #a9b1d6; }
-.log-warn { color: #e0af68; }
-.log-error { color: #f7768e; }
-.log-fatal { color: #ff5555; font-weight: bold; }
+.log-debug {
+  color: #9ece6a;
+}
+
+.log-info {
+  color: #a9b1d6;
+}
+
+.log-warn {
+  color: #e0af68;
+}
+
+.log-error {
+  color: #f7768e;
+}
+
+.log-fatal {
+  color: #ff5555;
+  font-weight: bold;
+}
+
+/* Force dark mode for form elements in webview */
+select,
+input,
+textarea {
+  color-scheme: dark;
+}
+
+/* Custom select styling for webview compatibility */
+select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+select option {
+  background-color: #1f2937;
+  color: #f3f4f6;
+}
+
+/* Modal backdrop for webview */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+}

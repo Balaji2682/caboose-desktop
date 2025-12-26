@@ -1,17 +1,10 @@
 import { create } from 'zustand'
+import type { LogEntry as WailsLogEntry } from '@/lib/wails'
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal'
 
-export interface LogEntry {
-  id: string
-  timestamp: string
-  raw: string
-  level: LogLevel
-  message: string
-  processName: string
-  requestId?: string
-  metadata?: Record<string, unknown>
-}
+// Re-export the LogEntry type from wails for consistency
+export type LogEntry = WailsLogEntry
 
 interface LogFilter {
   processName?: string
@@ -96,7 +89,7 @@ export const useLogStore = create<LogState>((set, _get) => ({
 // Helper to get filtered logs
 export const getFilteredLogs = (logs: LogEntry[], filter: LogFilter): LogEntry[] => {
   return logs.filter((log) => {
-    if (filter.processName && log.processName !== filter.processName) {
+    if (filter.processName && log.process !== filter.processName) {
       return false
     }
     if (filter.level && log.level !== filter.level) {
@@ -104,10 +97,7 @@ export const getFilteredLogs = (logs: LogEntry[], filter: LogFilter): LogEntry[]
     }
     if (filter.search) {
       const searchLower = filter.search.toLowerCase()
-      return (
-        log.raw.toLowerCase().includes(searchLower) ||
-        log.message.toLowerCase().includes(searchLower)
-      )
+      return log.content.toLowerCase().includes(searchLower)
     }
     return true
   })

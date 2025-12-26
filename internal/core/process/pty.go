@@ -1,7 +1,6 @@
 package process
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -41,9 +40,10 @@ func (m *Manager) readPTYOutput(mp *ManagedProcess) {
 		return
 	}
 
-	reader := bufio.NewReader(mp.pty)
+	// Use a buffer for reading chunks (better for interactive console)
+	buf := make([]byte, 4096)
 	for {
-		line, err := reader.ReadString('\n')
+		n, err := mp.pty.Read(buf)
 		if err != nil {
 			if err != io.EOF {
 				// Log error but don't crash
@@ -51,11 +51,43 @@ func (m *Manager) readPTYOutput(mp *ManagedProcess) {
 			break
 		}
 
-		// Emit log line
-		if m.OnLog != nil {
-			m.OnLog(mp.Config.Name, line)
+		if n > 0 {
+			data := string(buf[:n])
+
+			// Emit console output for interactive processes (like rails-console)
+			if m.OnConsoleOutput != nil {
+				m.OnConsoleOutput(mp.Config.Name, data)
+			}
+
+			// Also emit as log lines (split by newline for log viewer)
+			if m.OnLog != nil {
+				// For log compatibility, emit each line separately
+				lines := splitLines(data)
+				for _, line := range lines {
+					if line != "" {
+						m.OnLog(mp.Config.Name, line)
+					}
+				}
+			}
 		}
 	}
+}
+
+// splitLines splits data into lines, handling partial lines
+func splitLines(data string) []string {
+	var lines []string
+	start := 0
+	for i, c := range data {
+		if c == '\n' {
+			lines = append(lines, data[start:i])
+			start = i + 1
+		}
+	}
+	// Include any remaining partial line
+	if start < len(data) {
+		lines = append(lines, data[start:])
+	}
+	return lines
 }
 
 // ResizePTY resizes the PTY window

@@ -10,16 +10,26 @@ import (
 
 // Plugin implements the Rails framework plugin
 type Plugin struct {
-	parser *Parser
-	query  *QueryAnalyzer
+	parser        *Parser
+	query         *QueryAnalyzer
+	testDetector  *TestDetector
+	debugDetector *DebugDetector
+	projectPath   string
 }
 
 // New creates a new Rails plugin instance
 func New() *Plugin {
 	return &Plugin{
-		parser: NewParser(),
-		query:  NewQueryAnalyzer(),
+		parser:        NewParser(),
+		query:         NewQueryAnalyzer(),
+		testDetector:  NewTestDetector(),
+		debugDetector: NewDebugDetector(),
 	}
+}
+
+// SetProjectPath sets the project path for context-aware operations
+func (p *Plugin) SetProjectPath(path string) {
+	p.projectPath = path
 }
 
 // Name returns the plugin name
@@ -96,11 +106,16 @@ func (p *Plugin) AnalyzeQuery(sql string, duration float64) *models.QueryAnalysi
 
 // GetDebugConfig returns the Rails debug configuration
 func (p *Plugin) GetDebugConfig() *plugin.DebugConfig {
+	if p.projectPath != "" {
+		return p.debugDetector.GetDebugConfig(p.projectPath, 12345)
+	}
+
+	// Fallback to default if no project path set
 	return &plugin.DebugConfig{
 		Type:        "ruby-debug-ide",
 		DefaultPort: 12345,
 		LaunchCommand: []string{
-			"rdebug-ide",
+			"bundle", "exec", "rdebug-ide",
 			"--host", "127.0.0.1",
 			"--port", "12345",
 			"--dispatcher-port", "26162",
@@ -115,11 +130,16 @@ func (p *Plugin) GetDebugConfig() *plugin.DebugConfig {
 
 // GetTestRunner returns the Rails test runner configuration
 func (p *Plugin) GetTestRunner() *plugin.TestRunner {
+	if p.projectPath != "" {
+		return p.testDetector.GetTestRunner(p.projectPath)
+	}
+
+	// Fallback to RSpec as default
 	return &plugin.TestRunner{
-		Name:        "rspec",
-		Command:     []string{"bundle", "exec", "rspec"},
+		Name:         "rspec",
+		Command:      []string{"bundle", "exec", "rspec"},
 		WatchCommand: []string{"bundle", "exec", "guard"},
-		FilePattern: "spec/**/*_spec.rb",
+		FilePattern:  "spec/**/*_spec.rb",
 	}
 }
 

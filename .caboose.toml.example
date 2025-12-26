@@ -1,0 +1,189 @@
+# Caboose Desktop Configuration Example
+# Save this as .caboose.toml in your project root
+
+# ============================================================================
+# Project Configuration
+# ============================================================================
+
+[project]
+name = "My Rails App"
+# framework = "rails"  # Optional: Auto-detected if not specified
+
+# ============================================================================
+# Process Definitions
+# ============================================================================
+# Each process runs in its own PTY with auto-restart support
+
+[processes.web]
+command = "bundle exec rails server"
+args = ["-p", "3000"]
+working_dir = "."
+auto_restart = true
+use_pty = true
+color = "#3B82F6"  # Blue
+
+[processes.worker]
+command = "bundle exec sidekiq"
+working_dir = "."
+auto_restart = true
+use_pty = true
+color = "#10B981"  # Green
+
+[processes.frontend]
+command = "npm"
+args = ["run", "dev"]
+working_dir = "./frontend"
+auto_restart = false
+use_pty = true
+color = "#F59E0B"  # Yellow
+
+# Optional processes
+[processes.console]
+command = "bundle exec rails console"
+auto_restart = false
+use_pty = true
+color = "#8B5CF6"  # Purple
+
+[processes.tail]
+command = "tail"
+args = ["-f", "log/development.log"]
+auto_restart = true
+use_pty = false
+color = "#6B7280"  # Gray
+
+# ============================================================================
+# Database Configuration (Optional)
+# ============================================================================
+
+[database]
+driver = "mysql"
+host = "localhost"
+port = 3306
+database = "myapp_development"
+user = "root"
+# password loaded from ENV: DB_PASSWORD
+ssl_mode = "disable"  # or "require", "verify-ca", "verify-full"
+
+# ============================================================================
+# Testing Configuration (Optional)
+# ============================================================================
+# Overrides auto-detected test framework
+
+[testing]
+framework = "rspec"  # or "minitest"
+command = ["bundle", "exec", "rspec"]
+watch_command = ["bundle", "exec", "guard"]
+file_pattern = "spec/**/*_spec.rb"
+
+# ============================================================================
+# Debugging Configuration (Optional)
+# ============================================================================
+# Overrides auto-detected debugger
+
+[debugging]
+type = "ruby-debug-ide"  # or "debug", "byebug", "pry-byebug"
+port = 12345
+auto_attach = false
+
+[debugging.environment]
+RAILS_ENV = "development"
+
+# ============================================================================
+# Performance & Monitoring
+# ============================================================================
+
+[performance]
+# Query analysis settings
+slow_query_threshold_ms = 100  # Warn on queries > 100ms
+n1_confidence_threshold = 70   # Only show N+1 warnings with >70% confidence
+
+# Log buffer settings
+log_buffer_lines = 10000       # Keep last 10K log lines in memory
+log_auto_scroll = true         # Auto-scroll to new logs
+
+# ============================================================================
+# Security Settings
+# ============================================================================
+
+[security]
+# Rate limiting (requests per second)
+query_rate_limit = 10
+process_rate_limit = 2
+pty_rate_limit = 50
+
+# Command whitelist (for AddProcess API)
+allowed_commands = [
+    "bundle",
+    "npm",
+    "yarn",
+    "rails",
+    "ruby",
+    "node",
+    "npx",
+    "rake",
+    "sidekiq",
+    "python",
+    "go",
+    "cargo",
+    "make",
+    "docker",
+]
+
+# ============================================================================
+# UI Preferences
+# ============================================================================
+
+[ui]
+theme = "tokyo-night"  # or "dracula", "nord", "solarized", "catppuccin", "material"
+font_size = 14
+show_timestamps = true
+timestamp_format = "relative"  # or "absolute"
+color_by_process = true
+
+# ============================================================================
+# Example: Multi-Framework Project
+# ============================================================================
+# For monorepos with multiple frameworks
+
+# [frameworks.backend]
+# name = "rails"
+# path = "./backend"
+
+# [frameworks.frontend]
+# name = "nextjs"
+# path = "./frontend"
+
+# ============================================================================
+# Example: Custom Plugin Configuration
+# ============================================================================
+# Framework-specific plugin settings
+
+[plugin.rails]
+detect_concerns = true
+parse_active_job = true
+parse_action_mailer = true
+
+# [plugin.django]
+# parse_celery = true
+# detect_migrations = true
+
+# ============================================================================
+# Environment Variables
+# ============================================================================
+# Global environment variables for all processes
+
+[environment]
+RAILS_ENV = "development"
+NODE_ENV = "development"
+REDIS_URL = "redis://localhost:6379/0"
+# DB_PASSWORD loaded from system ENV
+
+# ============================================================================
+# Notifications (Future)
+# ============================================================================
+
+# [notifications]
+# on_process_crash = true
+# on_slow_query = true
+# on_exception = true
+# on_n1_query = true

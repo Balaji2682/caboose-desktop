@@ -1,0 +1,178 @@
+name: Build Wails Application
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Wails CLI
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+      - name: Install Linux dependencies (Ubuntu 20.04/22.04)
+        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev
+
+      - name: Install Linux dependencies (Ubuntu 24.04)
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Build application
+        run: wails build -platform linux/amd64
+
+      - name: Get Ubuntu version name
+        id: ubuntu_version
+        run: |
+          VERSION=$(lsb_release -cs)
+          echo "codename=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: caboose-desktop-linux-${{ steps.ubuntu_version.outputs.codename }}-amd64
+          path: build/bin/caboose-desktop
+          retention-days: 30
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Wails CLI
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Build application
+        run: wails build -platform windows/amd64 -nsis
+
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: caboose-desktop-windows-amd64
+          path: build/bin/caboose-desktop.exe
+          retention-days: 30
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        if: hashFiles('build/bin/*.exe') != ''
+        with:
+          name: caboose-desktop-windows-installer
+          path: build/bin/*-installer.exe
+          retention-days: 30
+          if-no-files-found: ignore
+
+  release:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+
+    steps:
+      - name: Download Linux focal (20.04) artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: caboose-desktop-linux-focal-amd64
+          path: linux-focal
+
+      - name: Download Linux jammy (22.04) artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: caboose-desktop-linux-jammy-amd64
+          path: linux-jammy
+
+      - name: Download Linux noble (24.04) artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: caboose-desktop-linux-noble-amd64
+          path: linux-noble
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: caboose-desktop-windows-amd64
+          path: windows
+
+      - name: Download Windows installer
+        uses: actions/download-artifact@v4
+        with:
+          name: caboose-desktop-windows-installer
+          path: windows-installer
+        continue-on-error: true
+
+      - name: Prepare release assets
+        run: |
+          cd linux-focal && chmod +x caboose-desktop && tar -czvf ../caboose-desktop-linux-ubuntu-20.04-amd64.tar.gz caboose-desktop && cd ..
+          cd linux-jammy && chmod +x caboose-desktop && tar -czvf ../caboose-desktop-linux-ubuntu-22.04-amd64.tar.gz caboose-desktop && cd ..
+          cd linux-noble && chmod +x caboose-desktop && tar -czvf ../caboose-desktop-linux-ubuntu-24.04-amd64.tar.gz caboose-desktop && cd ..
+          cd windows && zip -r ../caboose-desktop-windows-amd64.zip caboose-desktop.exe && cd ..
+          if [ -d "windows-installer" ] && [ "$(ls -A windows-installer)" ]; then
+            cd windows-installer && zip -r ../caboose-desktop-windows-installer.zip *.exe && cd ..
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            caboose-desktop-linux-ubuntu-20.04-amd64.tar.gz
+            caboose-desktop-linux-ubuntu-22.04-amd64.tar.gz
+            caboose-desktop-linux-ubuntu-24.04-amd64.tar.gz
+            caboose-desktop-windows-amd64.zip
+            caboose-desktop-windows-installer.zip
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

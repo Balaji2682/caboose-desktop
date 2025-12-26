@@ -19,8 +19,9 @@ type Manager struct {
 	cancel    context.CancelFunc
 
 	// Callbacks for events
-	OnStatusChange func(name string, status models.ProcessStatus)
-	OnLog          func(name string, line string)
+	OnStatusChange  func(name string, status models.ProcessStatus)
+	OnLog           func(name string, line string)
+	OnConsoleOutput func(name string, data string) // For interactive console raw output
 }
 
 // ManagedProcess wraps a process with management capabilities
@@ -220,6 +221,25 @@ func (m *Manager) GetAllProcesses() []*models.Process {
 		processes = append(processes, mp.Process)
 	}
 	return processes
+}
+
+// RemoveProcess removes a process from the manager
+func (m *Manager) RemoveProcess(name string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	mp, exists := m.processes[name]
+	if !exists {
+		return fmt.Errorf("process %s not found", name)
+	}
+
+	// Make sure process is stopped before removing
+	if mp.Process.Status == models.ProcessStatusRunning {
+		return fmt.Errorf("cannot remove running process %s, stop it first", name)
+	}
+
+	delete(m.processes, name)
+	return nil
 }
 
 // monitorProcess watches for process exit and handles restart

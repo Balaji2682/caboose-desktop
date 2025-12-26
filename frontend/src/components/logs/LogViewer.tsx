@@ -2,7 +2,7 @@ import { useRef, useEffect, useMemo } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useLogStore, getFilteredLogs, LogEntry, LogLevel } from '../../stores/logStore'
 
-const levelColors: Record<LogLevel, string> = {
+const levelColors: Record<string, string> = {
   debug: 'log-debug',
   info: 'log-info',
   warn: 'log-warn',
@@ -12,6 +12,7 @@ const levelColors: Record<LogLevel, string> = {
 
 function LogLine({ log, style }: { log: LogEntry; style: React.CSSProperties }) {
   const timestamp = new Date(log.timestamp).toLocaleTimeString()
+  const levelClass = levelColors[log.level] || 'log-info'
 
   return (
     <div
@@ -22,16 +23,16 @@ function LogLine({ log, style }: { log: LogEntry; style: React.CSSProperties }) 
       <span className="text-muted shrink-0 w-20">{timestamp}</span>
 
       {/* Process Name */}
-      <span className="text-accent shrink-0 w-24 truncate">{log.processName}</span>
+      <span className="text-accent shrink-0 w-24 truncate">{log.process}</span>
 
       {/* Level */}
-      <span className={`shrink-0 w-12 ${levelColors[log.level]}`}>
+      <span className={`shrink-0 w-12 ${levelClass}`}>
         [{log.level.toUpperCase()}]
       </span>
 
       {/* Message */}
       <span className="text-foreground whitespace-pre-wrap break-all flex-1">
-        {log.message || log.raw}
+        {log.content}
       </span>
     </div>
   )

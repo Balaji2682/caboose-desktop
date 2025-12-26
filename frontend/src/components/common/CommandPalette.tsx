@@ -1,177 +1,219 @@
-import { Command } from 'cmdk'
-import { useAppStore } from '../../stores/appStore'
-import { useProcessStore } from '../../stores/processStore'
-import { useLogStore } from '../../stores/logStore'
+import { memo, useCallback, useMemo } from 'react';
+import { Command } from 'cmdk';
+import {
+  LayoutDashboard,
+  Boxes,
+  Database,
+  Activity,
+  FlaskConical,
+  AlertTriangle,
+  BarChart3,
+  Settings,
+  Terminal,
+  Code2,
+  Search,
+  Command as CommandIcon,
+  type LucideIcon,
+} from 'lucide-react';
+import { useAppStore, type Screen } from '@/stores/appStore';
 
-export function CommandPalette() {
-  const { commandPaletteOpen, setCommandPaletteOpen, setSelectedView, setTheme } = useAppStore()
-  const { processes, startProcess, stopProcess, restartProcess } = useProcessStore()
-  const { clearLogs } = useLogStore()
+interface CommandItem {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  keywords: string;
+  action: () => void;
+}
 
-  if (!commandPaletteOpen) return null
+const CommandPaletteContent = memo(() => {
+  const setActiveScreen = useAppStore((s) => s.setActiveScreen);
+  const setCommandPaletteOpen = useAppStore((s) => s.setCommandPaletteOpen);
+
+  const handleNavigate = useCallback(
+    (screen: Screen) => {
+      setActiveScreen(screen);
+      setCommandPaletteOpen(false);
+    },
+    [setActiveScreen, setCommandPaletteOpen]
+  );
+
+  const commands: CommandItem[] = useMemo(
+    () => [
+      {
+        id: 'dashboard',
+        label: 'Dashboard',
+        icon: LayoutDashboard,
+        keywords: 'home overview main',
+        action: () => handleNavigate('dashboard'),
+      },
+      {
+        id: 'processes',
+        label: 'Process Management',
+        icon: Boxes,
+        keywords: 'server rails react processes start stop',
+        action: () => handleNavigate('processes'),
+      },
+      {
+        id: 'console',
+        label: 'Rails Console',
+        icon: Terminal,
+        keywords: 'irb ruby console repl interactive',
+        action: () => handleNavigate('console'),
+      },
+      {
+        id: 'query-console',
+        label: 'Query Console',
+        icon: Code2,
+        keywords: 'sql database query editor',
+        action: () => handleNavigate('query-console'),
+      },
+      {
+        id: 'queries',
+        label: 'Query Analysis',
+        icon: Database,
+        keywords: 'sql queries n+1 performance database',
+        action: () => handleNavigate('queries'),
+      },
+      {
+        id: 'database',
+        label: 'Database Health',
+        icon: Activity,
+        keywords: 'db health score indexes slow',
+        action: () => handleNavigate('database'),
+      },
+      {
+        id: 'tests',
+        label: 'Test Integration',
+        icon: FlaskConical,
+        keywords: 'rspec minitest testing coverage',
+        action: () => handleNavigate('tests'),
+      },
+      {
+        id: 'exceptions',
+        label: 'Exception Tracking',
+        icon: AlertTriangle,
+        keywords: 'errors exceptions bugs crashes',
+        action: () => handleNavigate('exceptions'),
+      },
+      {
+        id: 'metrics',
+        label: 'Metrics Dashboard',
+        icon: BarChart3,
+        keywords: 'stats charts graphs analytics',
+        action: () => handleNavigate('metrics'),
+      },
+      {
+        id: 'settings',
+        label: 'Settings',
+        icon: Settings,
+        keywords: 'preferences config configuration theme',
+        action: () => handleNavigate('settings'),
+      },
+    ],
+    [handleNavigate]
+  );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/50"
-        onClick={() => setCommandPaletteOpen(false)}
-      />
+    <Command.List className="max-h-96 overflow-y-auto p-2">
+      <Command.Empty className="p-8 text-center text-gray-500">
+        <p>No results found</p>
+      </Command.Empty>
 
-      {/* Command Dialog */}
+      <div className="space-y-1">
+        {commands.map((cmd) => {
+          const Icon = cmd.icon;
+
+          return (
+            <Command.Item
+              key={cmd.id}
+              value={`${cmd.label} ${cmd.keywords}`}
+              onSelect={cmd.action}
+              className="flex items-center gap-4 px-4 py-3 rounded-xl transition-all text-left cursor-pointer data-[selected=true]:bg-gradient-to-r data-[selected=true]:from-cyan-500/20 data-[selected=true]:to-blue-500/20 data-[selected=true]:border data-[selected=true]:border-cyan-500/30 hover:bg-white/5"
+            >
+              <div className="p-2 rounded-lg bg-white/5 group-hover:bg-white/10 data-[selected=true]:bg-cyan-500/20">
+                <Icon className="w-5 h-5 text-gray-400 data-[selected=true]:text-cyan-400" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-300">{cmd.label}</p>
+                <p className="text-xs text-gray-500">{cmd.keywords.split(' ')[0]}</p>
+              </div>
+            </Command.Item>
+          );
+        })}
+      </div>
+    </Command.List>
+  );
+});
+
+CommandPaletteContent.displayName = 'CommandPaletteContent';
+
+export const CommandPalette = memo(() => {
+  const commandPaletteOpen = useAppStore((s) => s.commandPaletteOpen);
+  const setCommandPaletteOpen = useAppStore((s) => s.setCommandPaletteOpen);
+
+  const handleClose = useCallback(() => {
+    setCommandPaletteOpen(false);
+  }, [setCommandPaletteOpen]);
+
+  if (!commandPaletteOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-start justify-center pt-32 animate-fade-in"
+      onClick={handleClose}
+    >
       <Command
-        className="relative w-full max-w-lg bg-background border border-border rounded-lg shadow-2xl overflow-hidden"
+        className="w-full max-w-2xl glass rounded-2xl shadow-2xl overflow-hidden animate-scale-in border border-white/20"
+        onClick={(e) => e.stopPropagation()}
         loop
       >
-        <Command.Input
-          placeholder="Type a command or search..."
-          className="w-full px-4 py-3 text-sm bg-transparent border-b border-border outline-none placeholder:text-muted"
-        />
+        {/* Search Input */}
+        <div className="flex items-center gap-3 p-5 border-b border-white/10">
+          <Search className="w-5 h-5 text-cyan-400" />
+          <Command.Input
+            placeholder="Type a command or search..."
+            className="flex-1 bg-transparent outline-none text-gray-100 placeholder-gray-500 text-lg"
+            autoFocus
+          />
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-white/10 border border-white/20 rounded-lg">
+            <CommandIcon className="w-3 h-3 text-gray-400" />
+            <span className="text-xs text-gray-400 font-medium">K</span>
+          </div>
+        </div>
 
-        <Command.List className="max-h-80 overflow-y-auto p-2">
-          <Command.Empty className="py-6 text-center text-sm text-muted">
-            No results found.
-          </Command.Empty>
-
-          {/* Views */}
-          <Command.Group heading="Views" className="px-2 py-1.5 text-xs text-muted">
-            <Command.Item
-              onSelect={() => {
-                setSelectedView('logs')
-                setCommandPaletteOpen(false)
-              }}
-              className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-border/50 aria-selected:bg-border"
-            >
-              📋 Logs
-            </Command.Item>
-            <Command.Item
-              onSelect={() => {
-                setSelectedView('queries')
-                setCommandPaletteOpen(false)
-              }}
-              className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-border/50 aria-selected:bg-border"
-            >
-              🔍 Query Analysis
-            </Command.Item>
-            <Command.Item
-              onSelect={() => {
-                setSelectedView('debug')
-                setCommandPaletteOpen(false)
-              }}
-              className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-border/50 aria-selected:bg-border"
-            >
-              🐛 Debug Panel
-            </Command.Item>
-            <Command.Item
-              onSelect={() => {
-                setSelectedView('health')
-                setCommandPaletteOpen(false)
-              }}
-              className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-border/50 aria-selected:bg-border"
-            >
-              💚 Database Health
-            </Command.Item>
-          </Command.Group>
-
-          {/* Process Actions */}
-          {processes.length > 0 && (
-            <Command.Group heading="Processes" className="px-2 py-1.5 text-xs text-muted">
-              {processes.map((process) => (
-                <Command.Item
-                  key={process.name}
-                  onSelect={() => {
-                    if (process.status === 'running') {
-                      restartProcess(process.name)
-                    } else {
-                      startProcess(process.name)
-                    }
-                    setCommandPaletteOpen(false)
-                  }}
-                  className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-border/50 aria-selected:bg-border"
-                >
-                  {process.status === 'running' ? '🔄' : '▶️'} {process.name}
-                  <span className="text-muted ml-2">
-                    ({process.status === 'running' ? 'restart' : 'start'})
-                  </span>
-                </Command.Item>
-              ))}
-            </Command.Group>
-          )}
-
-          {/* Actions */}
-          <Command.Group heading="Actions" className="px-2 py-1.5 text-xs text-muted">
-            <Command.Item
-              onSelect={() => {
-                clearLogs()
-                setCommandPaletteOpen(false)
-              }}
-              className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-border/50 aria-selected:bg-border"
-            >
-              🗑️ Clear Logs
-            </Command.Item>
-            <Command.Item
-              onSelect={() => {
-                processes.forEach((p) => {
-                  if (p.status !== 'running') startProcess(p.name)
-                })
-                setCommandPaletteOpen(false)
-              }}
-              className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-border/50 aria-selected:bg-border"
-            >
-              ▶️ Start All Processes
-            </Command.Item>
-            <Command.Item
-              onSelect={() => {
-                processes.forEach((p) => {
-                  if (p.status === 'running') stopProcess(p.name)
-                })
-                setCommandPaletteOpen(false)
-              }}
-              className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-border/50 aria-selected:bg-border"
-            >
-              ⏹️ Stop All Processes
-            </Command.Item>
-          </Command.Group>
-
-          {/* Themes */}
-          <Command.Group heading="Themes" className="px-2 py-1.5 text-xs text-muted">
-            <Command.Item
-              onSelect={() => {
-                setTheme('theme-tokyo-night')
-                setCommandPaletteOpen(false)
-              }}
-              className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-border/50 aria-selected:bg-border"
-            >
-              🌃 Tokyo Night
-            </Command.Item>
-            <Command.Item
-              onSelect={() => {
-                setTheme('theme-dracula')
-                setCommandPaletteOpen(false)
-              }}
-              className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-border/50 aria-selected:bg-border"
-            >
-              🧛 Dracula
-            </Command.Item>
-            <Command.Item
-              onSelect={() => {
-                setTheme('theme-nord')
-                setCommandPaletteOpen(false)
-              }}
-              className="px-2 py-1.5 text-sm rounded cursor-pointer hover:bg-border/50 aria-selected:bg-border"
-            >
-              ❄️ Nord
-            </Command.Item>
-          </Command.Group>
-        </Command.List>
+        <CommandPaletteContent />
 
         {/* Footer */}
-        <div className="px-3 py-2 text-xs text-muted border-t border-border flex justify-between">
-          <span>↑↓ Navigate</span>
-          <span>↵ Select</span>
-          <span>Esc Close</span>
+        <div className="p-3 border-t border-white/10 bg-white/5">
+          <div className="flex items-center justify-between text-xs text-gray-500">
+            <div className="flex items-center gap-4">
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 bg-white/10 border border-white/20 rounded">
+                  ↑
+                </kbd>
+                <kbd className="px-1.5 py-0.5 bg-white/10 border border-white/20 rounded">
+                  ↓
+                </kbd>
+                <span className="ml-1">Navigate</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 bg-white/10 border border-white/20 rounded">
+                  ↵
+                </kbd>
+                <span className="ml-1">Select</span>
+              </span>
+            </div>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-white/10 border border-white/20 rounded">
+                ESC
+              </kbd>
+              <span className="ml-1">Close</span>
+            </span>
+          </div>
         </div>
       </Command>
     </div>
-  )
-}
+  );
+});
+
+CommandPalette.displayName = 'CommandPalette';

@@ -121,12 +121,6 @@ export function ProcessSidebar() {
                   </div>
                 </div>
 
-                {/* Restart Count */}
-                {process.restartCount > 0 && (
-                  <div className="mt-1 text-xs text-muted">
-                    Restarts: {process.restartCount}
-                  </div>
-                )}
               </li>
             ))}
           </ul>
