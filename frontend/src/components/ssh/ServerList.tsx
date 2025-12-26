@@ -19,11 +19,12 @@ export const ServerList = memo(() => {
   }, [loadServers]);
 
   // Group servers by tags
+  const safeServers = servers || [];
   const groupedServers: Record<string, SSHServer[]> = {
-    all: servers,
+    all: safeServers,
   };
 
-  servers.forEach((server) => {
+  safeServers.forEach((server) => {
     if (server.tags && server.tags.length > 0) {
       server.tags.forEach((tag) => {
         if (!groupedServers[tag]) {

@@ -13,6 +13,8 @@ import {
   Terminal,
   Code2,
   Zap,
+  GitBranch,
+  Server,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -38,6 +40,8 @@ const navItems: NavItem[] = [
   { id: 'tests', label: 'Tests', icon: FlaskConical, shortcut: '7' },
   { id: 'exceptions', label: 'Exceptions', icon: AlertTriangle, shortcut: '8' },
   { id: 'metrics', label: 'Metrics', icon: BarChart3, shortcut: '9' },
+  { id: 'ssh', label: 'SSH', icon: Server, badge: 'New', shortcut: 'S' },
+  { id: 'git', label: 'Git', icon: GitBranch, badge: 'New', shortcut: 'G' },
 ];
 
 interface NavButtonProps {

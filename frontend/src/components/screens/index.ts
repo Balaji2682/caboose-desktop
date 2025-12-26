@@ -9,3 +9,4 @@ export { ExceptionTracking } from './ExceptionTracking';
 export { MetricsDashboard } from './MetricsDashboard';
 export { Settings } from './Settings';
 export { SSHManager } from './SSHManager';
+export { GitManager } from './GitManager';

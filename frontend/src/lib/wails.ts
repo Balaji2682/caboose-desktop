@@ -9,6 +9,17 @@ import type {
   QueryComparison,
 } from '@/types/query';
 import type { SSHServer, SSHSession, SSHTunnel } from '@/types/ssh';
+import type {
+  GitStatus,
+  GitDiff,
+  GitBlameFile,
+  GitCommit,
+  GitBranch,
+  GitConflictFile,
+  GitDiffOptions,
+  GitLogOptions,
+  GitCommitOptions,
+} from '@/types/git';
 
 declare global {
   interface Window {
@@ -72,6 +83,24 @@ declare global {
           CreateSSHTunnel(sessionID: string, tunnel: SSHTunnel): Promise<void>;
           ExportSSHSession(sessionID: string, format: string): Promise<string>;
           GetSSHSessions(): Promise<SSHSession[]>;
+          // Git methods
+          IsGitRepository(): Promise<boolean>;
+          GetGitStatus(): Promise<GitStatus>;
+          GetGitDiff(options: GitDiffOptions): Promise<GitDiff[]>;
+          GetGitBlame(filePath: string): Promise<GitBlameFile>;
+          GetGitLog(options: GitLogOptions): Promise<GitCommit[]>;
+          StageFiles(files: string[]): Promise<void>;
+          UnstageFiles(files: string[]): Promise<void>;
+          CommitChanges(options: GitCommitOptions): Promise<void>;
+          RevertFile(filePath: string): Promise<void>;
+          RevertFileToCommit(filePath: string, commitHash: string): Promise<void>;
+          DiscardChanges(filePath: string): Promise<void>;
+          GetConflictFile(filePath: string): Promise<GitConflictFile>;
+          ResolveConflict(filePath: string, resolution: string): Promise<void>;
+          GetGitBranches(): Promise<GitBranch[]>;
+          CreateGitBranch(name: string, startPoint: string): Promise<void>;
+          CheckoutGitBranch(name: string): Promise<void>;
+          DeleteGitBranch(name: string, force: boolean): Promise<void>;
         };
       };
     };

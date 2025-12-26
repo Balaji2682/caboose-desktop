@@ -14,6 +14,7 @@ import (
 	"github.com/caboose-desktop/internal/core/config"
 	"github.com/caboose-desktop/internal/core/database"
 	"github.com/caboose-desktop/internal/core/exceptions"
+	"github.com/caboose-desktop/internal/core/git"
 	"github.com/caboose-desktop/internal/core/metrics"
 	"github.com/caboose-desktop/internal/core/process"
 	"github.com/caboose-desktop/internal/core/security"
@@ -62,6 +63,7 @@ type App struct {
 	workerPool       *workers.Pool
 	rateLimiter      *security.RateLimiter
 	sshManager       *ssh.Manager
+	gitManager       *git.Manager
 	config           *config.Config
 	projectDir       string
 	logMu            sync.RWMutex
@@ -149,6 +151,11 @@ func (a *App) startup(ctx context.Context) {
 		}
 	}
 
+	// Initialize Git manager with project directory
+	if a.projectDir != "" {
+		a.gitManager = git.NewManager(a.projectDir)
+	}
+
 	// Start metrics collection ticker
 	go func() {
 		ticker := time.NewTicker(1 * time.Minute)
@@ -224,8 +231,8 @@ func (a *App) detectFramework() {
 		a.frameworkName = detectedPlugin.Name()
 
 		// If plugin supports SetProjectPath, call it
-		if railsPlugin, ok := detectedPlugin.(*interface{ SetProjectPath(string) }); ok {
-			(*railsPlugin).SetProjectPath(a.projectDir)
+		if railsPlugin, ok := detectedPlugin.(interface{ SetProjectPath(string) }); ok {
+			railsPlugin.SetProjectPath(a.projectDir)
 		}
 
 		log.Printf("[Plugin] Detected framework: %s (v%s)",
@@ -1437,12 +1444,10 @@ func (a *App) GetSmartRecommendations() ([]models.SmartRecommendation, error) {
 	stats := a.databaseManager.GetQueryStatistics()
 
 	// Get N+1 warnings (if Rails plugin is available)
-	n1Warnings := []models.N1Warning{}
-	// TODO: Implement N+1 warning collection from Rails plugin
+	_ = []models.N1Warning{} // TODO: Implement N+1 warning collection from Rails plugin
 
 	// Get EXPLAIN results for problematic queries
-	explainResults := make(map[string]*database.ExplainResult)
-	// TODO: Could cache EXPLAIN results from previous analyses
+	_ = make(map[string]*database.ExplainResult) // TODO: Could cache EXPLAIN results from previous analyses
 
 	// Generate recommendations using the Rails recommendation engine
 	// For now, create a simple recommendation engine instance
@@ -1751,6 +1756,9 @@ func (a *App) GetSSHServers() []models.SSHServer {
 	if a.config == nil {
 		return []models.SSHServer{}
 	}
+	if a.config.SSH.SavedServers == nil {
+		return []models.SSHServer{}
+	}
 	return a.config.SSH.SavedServers
 }
 
@@ -1891,4 +1899,144 @@ func exportSSHLogsPlainText(logs []models.SSHSessionLog) string {
 		buf.WriteString(log.Content)
 	}
 	return buf.String()
+}
+
+// ============================================================================
+// Git Integration API Methods
+// ============================================================================
+
+// IsGitRepository checks if the current project is a git repository
+func (a *App) IsGitRepository() bool {
+	if a.gitManager == nil {
+		return false
+	}
+	return a.gitManager.IsGitRepository()
+}
+
+// GetGitStatus returns the current git repository status
+func (a *App) GetGitStatus() (*models.GitStatus, error) {
+	if a.gitManager == nil {
+		return nil, fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.GetStatus()
+}
+
+// GetGitDiff returns the diff for files
+func (a *App) GetGitDiff(options models.GitDiffOptions) ([]models.GitDiff, error) {
+	if a.gitManager == nil {
+		return nil, fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.GetDiff(options)
+}
+
+// GetGitBlame returns blame information for a file
+func (a *App) GetGitBlame(filePath string) (*models.GitBlameFile, error) {
+	if a.gitManager == nil {
+		return nil, fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.GetBlame(filePath)
+}
+
+// GetGitLog returns commit history
+func (a *App) GetGitLog(options models.GitLogOptions) ([]models.GitCommit, error) {
+	if a.gitManager == nil {
+		return nil, fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.GetLog(options)
+}
+
+// StageFiles stages files for commit
+func (a *App) StageFiles(files []string) error {
+	if a.gitManager == nil {
+		return fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.Stage(files)
+}
+
+// UnstageFiles unstages files
+func (a *App) UnstageFiles(files []string) error {
+	if a.gitManager == nil {
+		return fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.Unstage(files)
+}
+
+// CommitChanges creates a git commit
+func (a *App) CommitChanges(options models.GitCommitOptions) error {
+	if a.gitManager == nil {
+		return fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.Commit(options)
+}
+
+// RevertFile reverts a file to HEAD
+func (a *App) RevertFile(filePath string) error {
+	if a.gitManager == nil {
+		return fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.RevertFile(filePath)
+}
+
+// RevertFileToCommit reverts a file to a specific commit
+func (a *App) RevertFileToCommit(filePath string, commitHash string) error {
+	if a.gitManager == nil {
+		return fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.RevertToCommit(filePath, commitHash)
+}
+
+// DiscardChanges discards all changes in a file
+func (a *App) DiscardChanges(filePath string) error {
+	if a.gitManager == nil {
+		return fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.DiscardChanges(filePath)
+}
+
+// GetConflictFile returns conflict information for a file
+func (a *App) GetConflictFile(filePath string) (*models.GitConflictFile, error) {
+	if a.gitManager == nil {
+		return nil, fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.GetConflictFile(filePath)
+}
+
+// ResolveConflict resolves a conflict by accepting ours or theirs
+func (a *App) ResolveConflict(filePath string, resolution string) error {
+	if a.gitManager == nil {
+		return fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.ResolveConflict(filePath, resolution)
+}
+
+// GetGitBranches returns all git branches
+func (a *App) GetGitBranches() ([]models.GitBranch, error) {
+	if a.gitManager == nil {
+		return nil, fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.GetBranches()
+}
+
+// CreateGitBranch creates a new branch
+func (a *App) CreateGitBranch(name string, startPoint string) error {
+	if a.gitManager == nil {
+		return fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.CreateBranch(name, startPoint)
+}
+
+// CheckoutGitBranch checks out a branch
+func (a *App) CheckoutGitBranch(name string) error {
+	if a.gitManager == nil {
+		return fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.CheckoutBranch(name)
+}
+
+// DeleteGitBranch deletes a branch
+func (a *App) DeleteGitBranch(name string, force bool) error {
+	if a.gitManager == nil {
+		return fmt.Errorf("git manager not initialized")
+	}
+	return a.gitManager.DeleteBranch(name, force)
 }

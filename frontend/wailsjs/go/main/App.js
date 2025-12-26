@@ -6,6 +6,10 @@ export function AddProcess(arg1) {
   return window['go']['main']['App']['AddProcess'](arg1);
 }
 
+export function CheckoutGitBranch(arg1) {
+  return window['go']['main']['App']['CheckoutGitBranch'](arg1);
+}
+
 export function ClearExceptions() {
   return window['go']['main']['App']['ClearExceptions']();
 }
@@ -18,8 +22,40 @@ export function ClearQueryStatistics() {
   return window['go']['main']['App']['ClearQueryStatistics']();
 }
 
+export function CommitChanges(arg1) {
+  return window['go']['main']['App']['CommitChanges'](arg1);
+}
+
+export function CompareQueryPlans(arg1, arg2) {
+  return window['go']['main']['App']['CompareQueryPlans'](arg1, arg2);
+}
+
+export function ConfirmAndExecuteQuery(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ConfirmAndExecuteQuery'](arg1, arg2, arg3);
+}
+
 export function ConnectDatabase(arg1) {
   return window['go']['main']['App']['ConnectDatabase'](arg1);
+}
+
+export function ConnectSSH(arg1) {
+  return window['go']['main']['App']['ConnectSSH'](arg1);
+}
+
+export function CreateGitBranch(arg1, arg2) {
+  return window['go']['main']['App']['CreateGitBranch'](arg1, arg2);
+}
+
+export function CreateSSHTunnel(arg1, arg2) {
+  return window['go']['main']['App']['CreateSSHTunnel'](arg1, arg2);
+}
+
+export function DeleteGitBranch(arg1, arg2) {
+  return window['go']['main']['App']['DeleteGitBranch'](arg1, arg2);
+}
+
+export function DeleteSSHServer(arg1) {
+  return window['go']['main']['App']['DeleteSSHServer'](arg1);
 }
 
 export function DeleteSavedConnection(arg1) {
@@ -30,8 +66,16 @@ export function DeleteSavedQuery(arg1) {
   return window['go']['main']['App']['DeleteSavedQuery'](arg1);
 }
 
+export function DiscardChanges(arg1) {
+  return window['go']['main']['App']['DiscardChanges'](arg1);
+}
+
 export function DisconnectDatabase() {
   return window['go']['main']['App']['DisconnectDatabase']();
+}
+
+export function DisconnectSSH(arg1) {
+  return window['go']['main']['App']['DisconnectSSH'](arg1);
 }
 
 export function ExecuteDatabaseQuery(arg1, arg2) {
@@ -40,6 +84,18 @@ export function ExecuteDatabaseQuery(arg1, arg2) {
 
 export function ExplainDatabaseQuery(arg1) {
   return window['go']['main']['App']['ExplainDatabaseQuery'](arg1);
+}
+
+export function ExportSSHSession(arg1, arg2) {
+  return window['go']['main']['App']['ExportSSHSession'](arg1, arg2);
+}
+
+export function GetAvailablePlugins() {
+  return window['go']['main']['App']['GetAvailablePlugins']();
+}
+
+export function GetConflictFile(arg1) {
+  return window['go']['main']['App']['GetConflictFile'](arg1);
 }
 
 export function GetDatabaseHealth() {
@@ -54,8 +110,36 @@ export function GetDatabaseTables() {
   return window['go']['main']['App']['GetDatabaseTables']();
 }
 
+export function GetDebugConfiguration() {
+  return window['go']['main']['App']['GetDebugConfiguration']();
+}
+
 export function GetExceptions() {
   return window['go']['main']['App']['GetExceptions']();
+}
+
+export function GetFrameworkInfo() {
+  return window['go']['main']['App']['GetFrameworkInfo']();
+}
+
+export function GetGitBlame(arg1) {
+  return window['go']['main']['App']['GetGitBlame'](arg1);
+}
+
+export function GetGitBranches() {
+  return window['go']['main']['App']['GetGitBranches']();
+}
+
+export function GetGitDiff(arg1) {
+  return window['go']['main']['App']['GetGitDiff'](arg1);
+}
+
+export function GetGitLog(arg1) {
+  return window['go']['main']['App']['GetGitLog'](arg1);
+}
+
+export function GetGitStatus() {
+  return window['go']['main']['App']['GetGitStatus']();
 }
 
 export function GetLogs(arg1) {
@@ -64,6 +148,10 @@ export function GetLogs(arg1) {
 
 export function GetMetrics() {
   return window['go']['main']['App']['GetMetrics']();
+}
+
+export function GetN1Warnings() {
+  return window['go']['main']['App']['GetN1Warnings']();
 }
 
 export function GetProcess(arg1) {
@@ -78,8 +166,24 @@ export function GetProjectInfo() {
   return window['go']['main']['App']['GetProjectInfo']();
 }
 
+export function GetQueryDistribution() {
+  return window['go']['main']['App']['GetQueryDistribution']();
+}
+
 export function GetQueryStatistics() {
   return window['go']['main']['App']['GetQueryStatistics']();
+}
+
+export function GetRequestQueryGroups(arg1) {
+  return window['go']['main']['App']['GetRequestQueryGroups'](arg1);
+}
+
+export function GetSSHServers() {
+  return window['go']['main']['App']['GetSSHServers']();
+}
+
+export function GetSSHSessions() {
+  return window['go']['main']['App']['GetSSHSessions']();
 }
 
 export function GetSavedConnections() {
@@ -90,8 +194,16 @@ export function GetSavedQueries() {
   return window['go']['main']['App']['GetSavedQueries']();
 }
 
+export function GetSmartRecommendations() {
+  return window['go']['main']['App']['GetSmartRecommendations']();
+}
+
 export function GetTableColumns(arg1) {
   return window['go']['main']['App']['GetTableColumns'](arg1);
+}
+
+export function GetTestRunner() {
+  return window['go']['main']['App']['GetTestRunner']();
 }
 
 export function GetWorkerPoolStats() {
@@ -102,8 +214,20 @@ export function IgnoreException(arg1) {
   return window['go']['main']['App']['IgnoreException'](arg1);
 }
 
+export function IgnoreQueryPattern(arg1) {
+  return window['go']['main']['App']['IgnoreQueryPattern'](arg1);
+}
+
+export function IsGitRepository() {
+  return window['go']['main']['App']['IsGitRepository']();
+}
+
 export function IsRailsConsoleRunning() {
   return window['go']['main']['App']['IsRailsConsoleRunning']();
+}
+
+export function ParseLogWithPlugin(arg1) {
+  return window['go']['main']['App']['ParseLogWithPlugin'](arg1);
 }
 
 export function RemoveProcess(arg1) {
@@ -122,12 +246,28 @@ export function ResizeRailsConsole(arg1, arg2) {
   return window['go']['main']['App']['ResizeRailsConsole'](arg1, arg2);
 }
 
+export function ResizeSSH(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ResizeSSH'](arg1, arg2, arg3);
+}
+
+export function ResolveConflict(arg1, arg2) {
+  return window['go']['main']['App']['ResolveConflict'](arg1, arg2);
+}
+
 export function ResolveException(arg1) {
   return window['go']['main']['App']['ResolveException'](arg1);
 }
 
 export function RestartProcess(arg1) {
   return window['go']['main']['App']['RestartProcess'](arg1);
+}
+
+export function RevertFile(arg1) {
+  return window['go']['main']['App']['RevertFile'](arg1);
+}
+
+export function RevertFileToCommit(arg1, arg2) {
+  return window['go']['main']['App']['RevertFileToCommit'](arg1, arg2);
 }
 
 export function SaveDatabaseConnection(arg1) {
@@ -138,12 +278,20 @@ export function SaveDatabaseQuery(arg1, arg2) {
   return window['go']['main']['App']['SaveDatabaseQuery'](arg1, arg2);
 }
 
+export function SaveSSHServer(arg1) {
+  return window['go']['main']['App']['SaveSSHServer'](arg1);
+}
+
 export function SelectProjectDirectory() {
   return window['go']['main']['App']['SelectProjectDirectory']();
 }
 
 export function SetProjectDirectory(arg1) {
   return window['go']['main']['App']['SetProjectDirectory'](arg1);
+}
+
+export function StageFiles(arg1) {
+  return window['go']['main']['App']['StageFiles'](arg1);
 }
 
 export function StartAllProcesses() {
@@ -168,6 +316,14 @@ export function StopProcess(arg1) {
 
 export function StopRailsConsole() {
   return window['go']['main']['App']['StopRailsConsole']();
+}
+
+export function UnstageFiles(arg1) {
+  return window['go']['main']['App']['UnstageFiles'](arg1);
+}
+
+export function WriteSSH(arg1, arg2) {
+  return window['go']['main']['App']['WriteSSH'](arg1, arg2);
 }
 
 export function WriteToPTY(arg1, arg2) {

@@ -67,10 +67,13 @@ export const useSSHStore = create<SSHState>()(
         try {
           const servers = await sshAPI.getServers();
           set((state) => {
-            state.servers = servers;
+            state.servers = servers || [];
           });
         } catch (err) {
           console.error('Failed to load SSH servers:', err);
+          set((state) => {
+            state.servers = [];
+          });
         }
       },
 

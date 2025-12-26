@@ -38,6 +38,9 @@ const MetricsDashboard = lazy(() =>
 const SSHManager = lazy(() =>
   import('@/components/screens').then((mod) => ({ default: mod.SSHManager }))
 );
+const GitManager = lazy(() =>
+  import('@/components/screens').then((mod) => ({ default: mod.GitManager }))
+);
 const Settings = lazy(() =>
   import('@/components/screens').then((mod) => ({ default: mod.Settings }))
 );
@@ -87,6 +90,7 @@ const ScreenRouter = memo(() => {
       exceptions: <ExceptionTracking />,
       metrics: <MetricsDashboard />,
       ssh: <SSHManager />,
+      git: <GitManager />,
       settings: <Settings />,
     }),
     []

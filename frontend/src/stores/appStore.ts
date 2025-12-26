@@ -15,6 +15,7 @@ export type Screen =
   | 'exceptions'
   | 'metrics'
   | 'ssh'
+  | 'git'
   | 'settings';
 
 export type Theme = 'default' | 'tokyo-night' | 'dracula' | 'nord' | 'solarized-dark' | 'catppuccin';
